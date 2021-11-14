@@ -37,7 +37,7 @@
 				<workerType>Micro</workerType>
 				<objectStoreV2>true</objectStoreV2>
 				<properties>
-				<api.id>17426621</api.id>
+				<ad.id>17426621</ad.id>
 				<env>dev</env>
 				<key>${key}</key>
 				<anypoint.platform.client_id>${client_id}</anypoint.platform.client_id>
@@ -68,7 +68,7 @@
 				<workerType>Micro</workerType>
 				<objectStoreV2>true</objectStoreV2>
 				<properties>
-				<api.id>17426689</api.id>
+				<ad.id>17426689</ad.id>
 				<env>test</env>
 				<key>${key}</key>
 				<anypoint.platform.client_id>${client_id}</anypoint.platform.client_id>

@@ -31,7 +31,7 @@
 				<configuration>				
 				<cloudHubDeployment>
 			    <applicationName>uho-ntpldev-uhub-sapi</applicationName>
-				<environment>dev</environment>
+				<environment>DEV</environment>
 				<region>us-east-2</region>
 				<workers>1</workers>
 				<workerType>Micro</workerType>
@@ -62,7 +62,7 @@
 				<configuration>				
 				<cloudHubDeployment>
 			    <applicationName>uho-ntpltest-uhub-sapi</applicationName>
-				<environment>test</environment>
+				<environment>TEST</environment>
 				<region>us-east-2</region>
 				<workers>1</workers>
 				<workerType>Micro</workerType>

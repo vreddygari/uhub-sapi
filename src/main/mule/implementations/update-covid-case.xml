@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+<flow name="put:\cases:application\json:uhub-sapi-config">
+       
+		<set-variable value="#[attributes.headers.'x-correlation-id' default &quot;&quot;]" doc:name="Set CorrelationId" doc:id="7c43410a-b12e-4733-94ff-a7f5f064f3b7" variableName="Set correlationId"/>
+		<logger level="INFO" doc:name="Start Logger" doc:id="dc698e15-c634-4d60-a82e-59a0ca09d5a1" message="transactionId: #[vars.transactionId],correlationId:#[vars.correlationId], message: Update covid case flow begins ,payload: #[payload]"/>
+		<flow-ref doc:name="call-update-covid-case-subflow" doc:id="6643165f-1e51-4d73-932d-a46680d2adaf" name="update-covid-case-sub-flow"/>
+		<choice doc:name="Choice" doc:id="552bc946-dd75-4399-a2e6-7221b5a4e915" >
+			<when expression="#[payload.updateCount1 &gt; 0]">
+				<ee:transform doc:name="Prepare Success Response" doc:id="acb1a862-6de6-49c7-b455-86a46c826da8" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "caseID": payload[0],
+  "Message":"Updated covid cased successfully"  
+  
+  }]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Prepare Negitive Response" doc:id="4e217d15-867d-4b88-a5aa-c29cb18f9991" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	
+	
+	"code": 404,
+	"message":"caseID "++ payload[0] ++ " " ++"not found"
+	
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Logger" doc:id="4c63a983-1c9c-4680-9aad-7bf51a6e5a5b" message="transactionId: #[vars.transactionId],correlationId:#[vars.correlationId], message: Updated covid case flow completed ,payload: #[payload]"/>
+    
+</flow>
+	</mule>

@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_ff7960dc_66c7_4edd_8648_2aaaaab726b2_Output_Variables_errorDescription = Array<String>
+

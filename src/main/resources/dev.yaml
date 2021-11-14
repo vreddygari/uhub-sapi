@@ -1,0 +1,9 @@
+http:
+ port: "8081"
+
+sqldb:
+ host: "uho-db.database.windows.net"
+ port: "1433"
+ user: "![yymuvRBsu736EEzBpoU6Fg==]"
+ pwsd: "![X8R0+sSJ3lPPRaVBWlTxJA==]"
+ dbase: "uho"

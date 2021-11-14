@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	
+	<sub-flow name="insert-register-covid-case-sub-flow" doc:id="73e5b34f-2a8e-4096-bfcd-97527e1f834f" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="66256afe-c16a-4484-ac9d-374d6645d6f1" message='transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:"Before insert register covid case database call" payload:#[payload]'/>
+		<db:stored-procedure doc:name="Insert Register Covid Case" doc:id="f33dd892-03cd-4650-9863-002aef05c310" config-ref="Database_Config">
+			<db:sql ><![CDATA[{ call SP_CVD_CASE_MASTER(:source,:case_type,:first_name,:last_name,:phone,:email,:date_of_birth,:national_id,:national_id_type,:street_address,:city,:state,:postal,:country,:create_date,:update_date,:create_by,:update_by,:reg_case_id) }]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	 "source":payload.source,
+   "case_type":payload.caseType,
+   "first_name":payload.firstName,
+   "last_name":payload.lastName,
+   "phone":payload.phone,
+   "email":payload.email,
+   "date_of_birth":payload.dateOfBirth as String{format:"yyyy-MM-dd"},
+   "national_id":payload.nationalID,
+   "national_id_type":payload.nationalIDType,
+   "street_address":payload.address.streetAddress,
+   "city":payload.address.city,
+   "state":payload.address.state,
+   "postal":payload.address.postal,
+    "country":payload.address.country,
+    "create_date":now() as String {format:"yyyy-MM-dd"},
+    "update_date":now() as String {format:"yyyy-MM-dd"},
+    "create_by":"UHIS",
+    "update_by":"UHIS"
+}]]]></db:input-parameters>
+			<db:output-parameters >
+				<db:output-parameter key="reg_case_id" type="INTEGER" />
+			</db:output-parameters>
+		</db:stored-procedure>
+		<logger level="INFO" doc:name="End Logger" doc:id="183d20a1-08a1-4441-9bca-e690d37e5d38" message='transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:"After insert register covid case  database call",payload:#[payload]'/>
+	</sub-flow>
+	<sub-flow name="get-covid-case-by-nationalId-sub-flow" doc:id="50689285-7f28-4bd0-adc4-d2fab45e24ed" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="2ac87e08-c57b-488e-957c-bb67ed476e51" message="transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:Before fetching get covid case by nationalId database call"/>
+		<db:stored-procedure doc:name="Get Covid Case By NationaId" doc:id="83cc6c65-574b-4512-8d1a-4926e32ec222" config-ref="Database_Config">
+			<db:sql ><![CDATA[{ call GetSP_CVD_CASE_MASTER(:nationalId)}]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	nationalId:vars.nationalID
+}]]]></db:input-parameters>
+		</db:stored-procedure>
+		<logger level="INFO" doc:name="End Logger" doc:id="f301ec47-65a8-4931-a2d0-3ec679252741" message="transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:completed fetching get covid case by nationalId database call,payload: #[payload]"/>
+	</sub-flow>
+	<sub-flow name="update-covid-case-sub-flow" doc:id="97ee56cf-b5ec-40c6-8144-910795e87963" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="c8a06c13-0269-464c-96ab-86a41a3e2bcc" message='transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:"Before insert update covid case database call" payload:#[payload]'/>
+		<db:stored-procedure doc:name="update Register Covid Case" doc:id="d0522477-4506-4443-a439-4c6d5f956185" config-ref="Database_Config">
+			<db:sql ><![CDATA[{ call UPDATE_CVD_CASE_MASTER(:source,:caseID,:case_type,:first_name,:last_name,:phone,:email,:date_of_birth,:national_id,:national_id_type,:street_address,:city,:state,:postal,:country,:update_date,:create_by,:update_by,:RefcaseID) }]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	 "source":payload.source,
+	 "caseID":payload.caseID,
+   "case_type":payload.caseType,
+   "first_name":payload.firstName,
+   "last_name":payload.lastName,
+   "phone":payload.phone,
+   "email":payload.email,
+   "date_of_birth":payload.dateOfBirth as String{format:"yyyy-MM-dd"},
+   "national_id":payload.nationalID,
+   "national_id_type":payload.nationalIDType,
+   "street_address":payload.address.streetAddress,
+   "city":payload.address.city,
+   "state":payload.address.state,
+   "postal":payload.address.postal,
+    "country":payload.address.country,
+
+    "update_date":now() as String {format:"yyyy-MM-dd"},
+    "create_by":"UHIS",
+    "update_by":"UHIS"
+}]]]></db:input-parameters>
+			<db:output-parameters >
+				<db:output-parameter key="RefcaseID" type="INTEGER" />
+			</db:output-parameters>
+		</db:stored-procedure>
+		<logger level="INFO" doc:name="End Logger" doc:id="1fbb6ccc-1102-49bf-9789-c62f02ff84d6" message='transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:"After insert update covid case database call" payload:#[payload]'/>
+	</sub-flow>
+	<sub-flow name="get-covid-reports-subflow" doc:id="5f468b03-736d-49b8-8a41-5468802820ea" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="4c02c000-dcc8-4ab2-97a2-40858ec88d99" message='transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:"Before fetching covid reports database call" '/>
+		<db:stored-procedure doc:name="get Covid Reports" doc:id="9a3348de-26d6-436c-a11c-b82dbfd20eba" config-ref="Database_Config">
+			<db:sql ><![CDATA[{call GetReposrts_CVD_CASE_MASTER(:state)}]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"state":attributes.queryParams.state
+}]]]></db:input-parameters>
+		</db:stored-procedure>
+		<logger level="INFO" doc:name="End Logger" doc:id="a8e5a8ec-e74e-4691-8845-560ff4461fb7" message='transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:"After fetching covid reports database call" ,payload:#[payload]'/>
+	</sub-flow>
+</mule>

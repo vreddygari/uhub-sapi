@@ -20,7 +20,7 @@
 	<profiles>
 	
 	<profile>
-	<id>dev</id>
+	<id>DEV</id>
 	<build>
 		<plugins>
 				<plugin>
@@ -37,7 +37,7 @@
 				<workerType>Micro</workerType>
 				<objectStoreV2>true</objectStoreV2>
 				<properties>
-				<ad.id>17426621</ad.id>
+				<api.id>17426865</api.id>
 				<env>dev</env>
 				<key>${key}</key>
 				<anypoint.platform.client_id>${client_id}</anypoint.platform.client_id>
@@ -51,7 +51,7 @@
 	</profile>
 	
 	<profile>
-	<id>test</id>
+	<id>TEST</id>
 	<build>
 		<plugins>
 				<plugin>
@@ -67,8 +67,8 @@
 				<workers>1</workers>
 				<workerType>Micro</workerType>
 				<objectStoreV2>true</objectStoreV2>
-				<properties>
-				<ad.id>17426689</ad.id>
+				<properties>				
+				<api.id>17426689</api.id>
 				<env>test</env>
 				<key>${key}</key>
 				<anypoint.platform.client_id>${client_id}</anypoint.platform.client_id>

@@ -1,4 +1,4 @@
 {
   "minMuleVersion": "4.4.0",
-  "secureproperties":["key","anypoint.platform.client_id","anypoint.platform.client_secret","username","password"]
+  "secureproperties":["anypoint.platform.client_secret", "anypoint.platform.client_id", "mule.key","username","password"]
 }

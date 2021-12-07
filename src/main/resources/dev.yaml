@@ -2,8 +2,8 @@ http:
  port: "8081"
 
 sqldb:
- host: "uho-db.database.windows.net"
+ host: "sql5108.site4now.net"
  port: "1433"
- user: "![yymuvRBsu736EEzBpoU6Fg==]"
+ user: "db_a7d42a_uho_admin"
  pwsd: "![X8R0+sSJ3lPPRaVBWlTxJA==]"
- dbase: "uho"
+ dbase: "db_a7d42a_uho"

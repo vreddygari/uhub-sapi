@@ -21,6 +21,6 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="bb82e035-7caf-4ed0-8da1-967293ba91c5" >
 		<db:mssql-connection host="${secure::sqldb.host}" port="${secure::sqldb.port}" user="${secure::sqldb.user}" password="${secure::sqldb.pwsd}" databaseName="${secure::sqldb.dbase}" />
 	</db:config>
-	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="65491620-b742-4173-b42c-9859747f1606" flowRef="uhub-sapi-main" />
+
 	
 </mule>

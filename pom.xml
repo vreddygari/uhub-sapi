@@ -29,7 +29,7 @@
 						<extensions>true</extensions>
 						<configuration>
 							<cloudHubDeployment>
-								<applicationName>uho-ntpldev-uhub-sapi</applicationName>
+								<applicationName>uho-ntpl-dev-uhub-sapi</applicationName>
 								<environment>Dev</environment>
 								<region>us-east-2</region>
 								<workers>1</workers>

@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<set-variable value="#[attributes.uriParams.nationalID]" doc:name="Set nationalId" doc:id="03503704-dd7f-459c-bf14-f0942b3695f8" variableName="nationalID"/>
 		<flow-ref doc:name="call-get-covid-case-by-nationalId-subflow" doc:id="7d7222b7-3b33-4fe1-9274-0d0ec7465c19" name="get-covid-case-by-nationalId-sub-flow"/>
 		<choice doc:name="Check Size" doc:id="faa7a095-d8b6-4df5-9d42-a8d45d6e551a" >
-			<when expression="#[sizeOf(payload)&gt;0]">
+			<when expression="#[isEmpty(payload.resultSet1)== false]">
 				<ee:transform doc:name="Prepare Success Response" doc:id="cb103f39-5537-4b5d-a068-6fae92036bd1" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0

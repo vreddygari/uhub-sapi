@@ -8,28 +8,35 @@
 		<set-variable value="#[attributes.headers.'x-correlation-id' default&quot;&quot;]" doc:name="Set correlationId" doc:id="867678e6-a4d9-4fbd-9ae8-d091fccb304c" variableName="correlationId"/>
 		<logger level="INFO" doc:name="Start Logger" doc:id="4707458a-26c3-490a-bbd7-f5fd6bd3fb24" message="transactionId: #[vars.transactionId],correlationId:#[vars.correlationId], message: Get covid case reports Startedand  query parameter is - #[attributes.queryParams.state]"/>
 		<flow-ref doc:name="get-covid-reports-sub-flow" doc:id="68e0e04f-f230-45b1-853e-96b4fd9eadc6" name="get-covid-reports-subflow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ed9368d6-63d0-4f4d-964e-af2077c19fc5" message="#[payload.resultSet1  groupBy ($.state)]"/>
 		<ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
----
-((payload.resultSet1  groupBy ($.state) mapObject (value, key, index) ->
+
+fun vaccbystate(state)= (payload.resultSet1 filter(($.state==state as String) and ($.case_type== "vaccinated")) map
 {
-    resultset:
-    {
-    state:key,
-    report: 
-    {
-        
-        total: sum(value.count),
-        (value map(item,index)->
-        {
-                    (item.case_type):item.count
-        })
-        
-    }
-}}).*resultset)
-]]></ee:set-payload>
+	count:$.count
+})[0]
+
+
+---
+((payload.resultSet1 groupBy($.state) mapObject(item,key)->
+{
+	reports:
+	{
+	state:key,
+	report:
+	{
+		
+		total: sum(item.count)-(vaccbystate(key).count as Number default 0),
+		(item map(value,index)->
+		{
+			(value.case_type):value.count
+		})
+	}
+	
+}}).*reports)]]></ee:set-payload>
             </ee:message>
         </ee:transform>
 		<logger level="INFO" doc:name="End Logger" doc:id="ca283bf1-9f4f-4f1d-93aa-35ffda5a97b9" message="transactionId: #[vars.transactionId],correlationId:#[vars.correlationId], message: Get covid case reports completed, payload: #[payload]"/>

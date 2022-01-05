@@ -43,7 +43,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	nationalId:vars.nationalID
 }]]]></db:input-parameters>
 		</db:stored-procedure>
-		<logger level="INFO" doc:name="End Logger" doc:id="f301ec47-65a8-4931-a2d0-3ec679252741" message="transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:completed fetching get covid case by nationalId database call,payload: #[payload]"/>
+		<logger level="INFO" doc:name="End Logger" doc:id="f301ec47-65a8-4931-a2d0-3ec679252741" message="transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:completed fetching get covid case by nationalId database call,payload: #[payload] "/>
 	</sub-flow>
 	<sub-flow name="update-covid-case-sub-flow" doc:id="97ee56cf-b5ec-40c6-8144-910795e87963" >
 		<logger level="INFO" doc:name="Start Logger" doc:id="c8a06c13-0269-464c-96ab-86a41a3e2bcc" message='transactionId:#[vars.transactionId],correlationId:#[vars.correlationId],message:"Before insert update covid case database call" payload:#[payload]'/>

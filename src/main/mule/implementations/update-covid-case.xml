@@ -1,15 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 
-<flow name="put:\cases:application\json:uhub-sapi-config">
+<os:object-store name="Object_store" doc:name="Object store" doc:id="f33c693f-eb14-4338-9923-de508b66faff" maxEntries="100" entryTtl="1" entryTtlUnit="HOURS" />
+	<flow name="put:\cases:application\json:uhub-sapi-config">
        
-		<set-variable value="#[attributes.headers.'x-correlation-id' default &quot;&quot;]" doc:name="Set CorrelationId" doc:id="7c43410a-b12e-4733-94ff-a7f5f064f3b7" variableName="Set correlationId"/>
-		<logger level="INFO" doc:name="Start Logger" doc:id="dc698e15-c634-4d60-a82e-59a0ca09d5a1" message="transactionId: #[vars.transactionId],correlationId:#[vars.correlationId], message: Update covid case flow begins ,payload: #[payload]"/>
+		<set-variable value="#[attributes.headers.'x-correlation-id' default &quot;&quot;]" doc:name="Set CorrelationId" doc:id="7c43410a-b12e-4733-94ff-a7f5f064f3b7" variableName="correlationId"/>
+		<logger level="INFO" doc:name="Start Logger" doc:id="dc698e15-c634-4d60-a82e-59a0ca09d5a1" message='transactionId: #[vars.transactionId],correlationId:#[vars.correlationId], message: Update covid case flow begins ,payload: #[payload] ,payloadwithpluack: #[payload pluck $ ]'/>
+		<ee:transform doc:name="Transform Message" doc:id="0ecdece7-76e5-47dd-91fe-fbbffb0d9e5d" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="varpayload" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	 "source":payload.source,
+	 "caseID":payload.caseID,
+   "case_type":payload.caseType,
+   "first_name":payload.firstName,
+   "last_name":payload.lastName,
+   "phone":payload.phone,
+   "email":payload.email,
+   "date_of_birth":payload.dateOfBirth as String{format:"yyyy-MM-dd"},
+   "national_id":payload.nationalID,
+   "national_id_type":payload.nationalIDType,
+   "street_address":payload.address.streetAddress,
+   "city":payload.address.city,
+   "state":payload.address.state,
+   "postal":payload.address.postal,
+    "country":payload.address.country,
+
+    "update_date":now() as String {format:"yyyy-MM-dd"},
+    "create_by":"UHIS",
+    "update_by":"UHIS"
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<idempotent-message-validator doc:name="Idempotent Message Validator" doc:id="a1ba2873-ee49-4521-8894-6c9f570b7068" idExpression='#[vars.varpayload pluck $ joinBy ""]' objectStore="Object_store"/>
 		<flow-ref doc:name="call-update-covid-case-subflow" doc:id="6643165f-1e51-4d73-932d-a46680d2adaf" name="update-covid-case-sub-flow"/>
 		<choice doc:name="Choice" doc:id="552bc946-dd75-4399-a2e6-7221b5a4e915" >
 			<when expression="#[payload.updateCount1 &gt; 0]">
@@ -44,6 +77,14 @@ output application/json
 			</otherwise>
 		</choice>
 		<logger level="INFO" doc:name="End Logger" doc:id="4c63a983-1c9c-4680-9aad-7bf51a6e5a5b" message="transactionId: #[vars.transactionId],correlationId:#[vars.correlationId], message: Updated covid case flow completed ,payload: #[payload]"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="02339059-cec2-49e2-9a9f-781893c76a75" type="MULE:DUPLICATE_MESSAGE">
+				<set-variable value="400" doc:name="Set HTTP Status - 400" doc:id="2420ae3c-a388-440b-bdf7-fbce944c6355" variableName="httpStatus"/>
+				<set-variable value="Bad request" doc:name="set Error Message" doc:id="8edb3dc5-d245-4a84-baec-ac5a9645982a" variableName="errorMessage"/>
+				<set-variable value='#["Duplicate request received"]' doc:name="Set Error Description" doc:id="fcaad4a3-31b6-4f44-ba49-24db041b62cd" variableName="errorDescription"/>
+				<flow-ref doc:name="global-prepare-error-response-sub-flow" doc:id="e0fe138a-bc4f-4ccb-8a49-b0b92aa36c6c" name="global-prepare-error-response-sub-flow"/>
+			</on-error-continue>
+		</error-handler>
     
 </flow>
 	</mule>
